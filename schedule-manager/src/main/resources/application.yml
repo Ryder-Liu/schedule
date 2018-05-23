@@ -1,0 +1,40 @@
+#server
+server:
+  port: 8808
+  context-path: /
+
+spring:
+  application:
+    index: 1
+    name: uncode-schedule
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+  resources:
+    static-locations: classpath:/static/
+
+#zookeeper配置
+uncode:
+  schedule:
+    zk-connect: localhost:2181
+    root-path: /testRootPath
+    zk-session-timeout: 60000
+    zk-username: user1
+    zk-password: 123456
+    #ip黑名单，可配置多个，逗号分隔
+    ip-black-list:
+    #初始化任务，可配置多个，逗号分隔
+    target-bean: jdbcToESTask
+    target-method: jdbcESSink
+    task-define-name: task1
+    period: 5000
+    delay:
+    cron-expression:
+    start-time:
+    params:
+    type:
+    ext-key-suffix:
+    before-method:
+    after-method:
+    thread-num:
+

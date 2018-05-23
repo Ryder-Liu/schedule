@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+	<Properties>
+		<Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %l - %msg%n</Property>
+		<Property name="FILE_PATH">../logs</Property>
+	</Properties>
+
+	<Appenders>
+		<Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+		</Console>
+		<!-- Rolling File Appender -->
+		<RollingFile name="FileAppender" fileName="${FILE_PATH}/console.log"
+			filePattern="${FILE_PATH}/console-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout>
+				<Pattern>${LOG_PATTERN}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="com.asiainfo.schedule" level="info" additivity="false">
+			<AppenderRef ref="ConsoleAppender" />
+		</Logger>
+		<Root level="info">
+			<AppenderRef ref="ConsoleAppender" />
+			<AppenderRef ref="FileAppender" />
+		</Root>
+	</Loggers>
+</Configuration>
