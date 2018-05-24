@@ -2,7 +2,7 @@ package com.asiainfo.schedule.web;
 
 import com.asiainfo.schedule.ConsoleManager;
 import com.asiainfo.schedule.core.TaskDefine;
-import com.asiainfo.schedule.taskTemplate.JdbcToESTask;
+import com.asiainfo.schedule.test.JdbcToESTask;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class ScheduleManage {
 
     /**
      * @Author: liulh
-     * @Description: 新增sink-es任务
+     * @Description: 新增es-sink任务
      * @Date: 2018/5/22 10:47
      * @Modified By:
      */

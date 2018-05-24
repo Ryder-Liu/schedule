@@ -47,9 +47,11 @@ public class PlainIndexableObject implements IndexableObject, ToXContent, Compar
 
     private Map<String, Object> core;
 
-    private Map<String, Object> chCore;
+    private Map<String, Object> zhCore;
 
     private final Params params;
+
+    private boolean isZh = false;
 
     public PlainIndexableObject() {
         this(ToXContent.EMPTY_PARAMS);
@@ -70,6 +72,15 @@ public class PlainIndexableObject implements IndexableObject, ToXContent, Compar
 
     @Override
     public String index() {
+        return index(false);
+    }
+
+    @Override
+    public String index(boolean isZh) {
+        this.isZh = isZh;
+        if (isZh) {
+            return this.index + "_" + "zh";
+        }
         return this.index;
     }
 
@@ -85,6 +96,12 @@ public class PlainIndexableObject implements IndexableObject, ToXContent, Compar
     }
 
     @Override
+    public IndexableObject setMainKey(String mainKey) {
+        this.mainKey = mainKey;
+        return this;
+    }
+
+    @Override
     public IndexableObject id(String id) {
         this.id = id;
         return this;
@@ -97,13 +114,17 @@ public class PlainIndexableObject implements IndexableObject, ToXContent, Compar
 
 
     @Override
-    public IndexableObject source(Map<String, Object> source) {
+    public IndexableObject source(Map<String, Object> source, Map<String, Object> zhSource) {
         this.core = source;
+        this.zhCore = zhSource;
         return this;
     }
 
     @Override
     public Map<String, Object> source() {
+        if (isZh) {
+            return zhCore;
+        }
         return core;
     }
 
@@ -113,15 +134,19 @@ public class PlainIndexableObject implements IndexableObject, ToXContent, Compar
      * @throws IOException when build gave an error
      */
     @Override
-    public String build() throws IOException {
+    public XContentBuilder build() throws IOException {
         XContentBuilder builder = jsonBuilder();
         toXContent(builder, params);
-        return builder.string();
+        return builder;
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        toXContent(builder, params, core);
+        if (isZh) {
+            toXContent(builder, params, zhCore);
+        } else {
+            toXContent(builder, params, core);
+        }
         return builder;
     }
 

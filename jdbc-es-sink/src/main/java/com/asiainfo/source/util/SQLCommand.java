@@ -36,7 +36,7 @@ public class SQLCommand {
 
     private String sql;
 
-    private List<Map<String, Object>> chCols;
+    private List<Map<String, Object>> zhCols;
 
     private static final Pattern STATEMENT_PATTERN = Pattern.compile("^\\s*(update|insert)", Pattern.CASE_INSENSITIVE);
 
@@ -58,12 +58,12 @@ public class SQLCommand {
         return sql;
     }
 
-    public void setChCols(String cols) {
-        this.chCols = parseChCols(cols);
+    public void setZhCols(String cols) {
+        this.zhCols = parseZhCols(cols);
     }
 
-    public List<Map<String, Object>> getChCols() {
-        return chCols;
+    public List<Map<String, Object>> getZhCols() {
+        return zhCols;
     }
 
     public boolean isWrite() {
@@ -106,7 +106,7 @@ public class SQLCommand {
             SQLCommand command = new SQLCommand();
             try {
                 command.setSQL(sql);
-                command.setChCols(cols);
+                command.setZhCols(cols);
                 sqls.add(command);
             } catch (IOException e) {
                 throw new IllegalArgumentException("SQL command not found", e);
@@ -116,11 +116,11 @@ public class SQLCommand {
     }
 
 
-    private List<Map<String, Object>> parseChCols (String cols) {
+    private List<Map<String, Object>> parseZhCols (String cols) {
         if (StringUtils.isNullOrEmpty(cols)) {
             return null;
         }
-        List<Map<String, Object>> chCols = new ArrayList<>();
+        List<Map<String, Object>> zhCols = new LinkedList<>();
         Map<String, Object> column;
         JSONArray jsonArr = JSONArray.parseArray(cols);
 
@@ -130,10 +130,10 @@ public class SQLCommand {
             for (Map.Entry<String, Object> entry : object.entrySet()) {
                 column.put(entry.getKey(), entry.getValue());
             }
-            chCols.add(column);
+            zhCols.add(column);
         }
 
-        return chCols;
+        return zhCols;
     }
 
     public String toString() {

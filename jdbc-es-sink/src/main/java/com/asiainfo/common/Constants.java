@@ -22,6 +22,7 @@ public class Constants {
 
     /*elasticsearch config name in conf file*/
     public static final String ES_HOSTS = "es.client.hosts";
+    public static final String DEFAULT_ES_HOSTS = "localhost";
 
     public static final String ES_CLUSTER_NAME = "es.cluster.name";
     public static final String DEFAULT_ES_CLUSTER_NAME = "elasticsearch";
@@ -88,6 +89,9 @@ public class Constants {
     public static final String JDBC_FETCH_SIZE="jdbc.fetchSize";
     public static final String JDBC_MAX_RETRY_WAIT="jdbc.maxRetryWait";
     public static final String JDBC_SQL_SEPARATED = ";";
+    public static final String JDBC_EN_COLNAME = "colName";
+    public static final String JDBC_CH_COLNAME = "colChineseName";
+    public static final String JDBC_IS_ID = "isId";
 
     /*JDBC DEFAULT configure*/
     public static final int DEFAULT_RETRIES = 1;

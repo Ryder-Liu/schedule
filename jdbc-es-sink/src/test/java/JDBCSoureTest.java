@@ -12,10 +12,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author liulh
@@ -63,14 +60,18 @@ public class JDBCSoureTest {
 
     @Test
     public void JDBCTest2() {
+        String json = "[{\"colName\":\"template_id\",\"colChineseName\":\"模版ID\",\"isId\":true}," +
+                "{\"colName\":\"template_name\",\"colChineseName\":\"模版名称\",\"isId\":false}," +
+                "{\"colName\":\"template_type\",\"colChineseName\":\"模版类型\",\"isId\":false}," +
+                "{\"colName\":\"upload_date\",\"colChineseName\":\"上传时间\",\"isId\":false}]";
         Settings settings = Settings.builder()
                 .put(Constants.JDBC_URL, "jdbc:mysql://localhost:3306/report?characterEncoding=utf8&useSSL=true")
                 .put(Constants.JDBC_USER, "root")
                 .put(Constants.JDBC_PASSWORD, "root")
                 .put(Constants.JDBC_SQL, "select * from sa_report_template")
-                .put(Constants.JDBC_COLS, "[{\"colName\":\"xxx\",\"colChineseName\":\"xxxx\",\"isId\":true}]")
-                .put("index", "sa_report_template")
-                .put("type", "jdbc")
+                .put(Constants.JDBC_COLS, json)
+                .put(Constants.ES_INDEX_DEFAULT_NAME, "version")
+                .put(Constants.ES_INDEX_DEFAULT_TYPE, "jdbc")
                 .build();
         JDBCSource source = new StandardSource();
         try {
@@ -109,5 +110,39 @@ public class JDBCSoureTest {
         }
         System.out.println(chCols.toString());
 
+    }
+
+    @Test
+    public void testJava8foreach() {
+        List<Map<String, Object>> lists = new ArrayList<>();
+        Map<String, Object> map;
+        map = new HashMap<>();
+        map.put("name", "John");
+        map.put("age", "12");
+        lists.add(map);
+        map = new HashMap<>();
+        map.put("name", "Peter");
+        map.put("age", "16");
+        lists.add(map);
+
+        lists.forEach(list ->
+                list.forEach((k, v) -> System.out.println("Item : " + k + " Count : " + v)
+                )
+        );
+
+        lists.stream()
+                .filter(s -> s.containsValue("John"))
+                .forEach(m ->
+                        System.out.println(m.get("age"))
+                );
+        Object a = lists.stream()
+                .filter(s -> s.containsValue("John")).findFirst().get().get("age");
+
+        String columnName = "John";
+
+        System.out.println(String.valueOf(lists.stream()
+                .filter(s -> s.containsValue(columnName)).findFirst().get().get("age")));
+
+        System.out.println(a);
     }
 }

@@ -2,6 +2,9 @@ package com.asiainfo.standard;
 
 import com.asiainfo.common.Constants;
 import com.asiainfo.source.JDBCSource;
+import com.asiainfo.source.Sink;
+import com.asiainfo.source.util.IndexableObject;
+import com.asiainfo.source.util.PlainIndexableObject;
 import com.asiainfo.source.util.SQLCommand;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
@@ -25,6 +28,10 @@ import java.util.*;
  **/
 public class StandardSource implements JDBCSource {
     private static final Logger logger = LoggerFactory.getLogger(StandardSource.class);
+
+    private Settings settings;
+
+    private Sink sink;
 
     protected String url;
 
@@ -200,9 +207,10 @@ public class StandardSource implements JDBCSource {
     public int getScale() {
         return scale;
     }
-    
+
 
     public StandardSource configure(Settings settings) {
+        this.settings = settings;
         this.setUrl(settings.get(Constants.JDBC_URL))
                 .setUser(settings.get(Constants.JDBC_USER))
                 .setPassword(settings.get(Constants.JDBC_PASSWORD))
@@ -367,7 +375,7 @@ public class StandardSource implements JDBCSource {
      */
     protected void merge(SQLCommand command, ResultSet results)
             throws SQLException, IOException {
-        beforeRows(command, results);
+        beforeRows();
         long rows = 0L;
         while (nextRow(command, results)) {
             rows++;
@@ -377,22 +385,21 @@ public class StandardSource implements JDBCSource {
         } else {
             logger.debug("no rows merged ");
         }
-//        afterRows(command, results);
+        afterRows();
     }
 
-    /**
-     * Before rows are read, let the KeyValueStreamListener know about the keys.
-     * If the SQL command was a callable statement and a register is there, look into the register map
-     * for the key names, not in the result set metadata.
-     *
-     * @param command  the SQL command that created this result set
-     * @param results  the result set
-     * @throws SQLException when SQL execution gives an error
-     * @throws IOException  when input/output error occurs
-     */
     @SuppressWarnings({"unchecked"})
-    public void beforeRows(SQLCommand command, ResultSet results)
-            throws SQLException, IOException {
+    public void beforeRows() {
+        sink = new StandardSink();
+        sink.configure(settings);
+    }
+
+
+    public void afterRows() {
+        if (sink != null) {
+            sink.shutdown();
+            sink = null;
+        }
     }
 
     /**
@@ -408,31 +415,51 @@ public class StandardSource implements JDBCSource {
     public boolean nextRow(SQLCommand command, ResultSet results)
             throws SQLException, IOException {
         if (results.next()) {
-            processRow(results);
+            processRow(command, results);
             return true;
         }
         return false;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void processRow(ResultSet results)
+    private void processRow(SQLCommand command, ResultSet results)
             throws SQLException, IOException {
-        List<Object> values = new LinkedList<Object>();
         ResultSetMetaData metadata = results.getMetaData();
+        //获取主键，传入配置列
+        String mainKey = "";
+        List<Map<String, Object>> zhCols = command.getZhCols();
+        Map<String, Object> zhSource = null;
+        if (zhCols != null) {
+            zhSource = new HashMap<>();
+            mainKey = String.valueOf(zhCols.stream().filter
+                    (s -> s.containsValue(true)).findFirst().get().get(Constants.JDBC_EN_COLNAME));
+        }
+
+        Map<String, Object> enSource = new HashMap<>();
         int columns = metadata.getColumnCount();
+
         for (int i = 1; i <= columns; i++) {
             try {
                 Object value = parseType(results, i, metadata.getColumnType(i), locale);
+                String columnName = metadata.getColumnName(i);
+                //添加英文字段名数据
+                enSource.put(columnName, value);
+                if (zhCols != null && zhCols.stream()
+                        .filter(s -> s.containsValue(columnName)).count() > 0) {
+                    zhSource.put(String.valueOf(zhCols.stream()
+                            .filter(s -> s.containsValue(columnName)).findFirst().get().get(Constants.JDBC_CH_COLNAME)), value);
+                }
                 if (logger.isTraceEnabled()) {
                     logger.trace("value={} class={}", value, value != null ? value.getClass().getName() : "");
                 }
-                values.add(value);
             } catch (ParseException e) {
                 logger.warn("parse error for value {}, using null instead", results.getObject(i));
-                values.add(null);
             }
         }
-        
+
+        IndexableObject object = new PlainIndexableObject();
+        object.setMainKey(mainKey).source(enSource, zhSource);
+        sink.process(object);
     }
 
     public Object parseType(ResultSet result, Integer i, int type, Locale locale)
@@ -937,7 +964,7 @@ public class StandardSource implements JDBCSource {
         }
         return null;
     }
-    
+
     /**
      * Execute query statement
      *

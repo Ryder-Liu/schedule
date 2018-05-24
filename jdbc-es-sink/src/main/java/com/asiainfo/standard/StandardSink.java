@@ -4,25 +4,39 @@ import com.asiainfo.client.BulkProcessorBuilder;
 import com.asiainfo.client.ElasticSearchClientBuilder;
 import com.asiainfo.common.Constants;
 import com.asiainfo.common.Utils;
+import com.asiainfo.source.Sink;
+import com.asiainfo.source.util.IndexableObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkProcessor;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.VersionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * @author liulh
  * @decription 数据插入ES
  * @create 2018-05-21 17:38
  **/
-public class StandardSink {
+public class StandardSink implements Sink {
 
     private static final Logger logger = LoggerFactory.getLogger(StandardSink.class);
-    
+
+    private String index;
+
+    private String type;
+
     private TransportClient client;
-    BulkProcessor bulkProcessor;
+
+    private BulkProcessor bulkProcessor;
 
     public BulkProcessor getBulkProcessor() {
         return bulkProcessor;
@@ -33,6 +47,8 @@ public class StandardSink {
     }
 
     public void configure(Settings settings) {
+        this.index = settings.get(Constants.ES_INDEX_DEFAULT_NAME, Constants.DEFAULT_ES_INDEX);
+        this.type = settings.get(Constants.ES_INDEX_DEFAULT_TYPE, Constants.DEFAULT_ES_TYPE);
         //TODO default value should be saved in the contant class.
         String[] hosts = getHosts(settings);
         if(ArrayUtils.isNotEmpty(hosts)) {
@@ -54,6 +70,24 @@ public class StandardSink {
         }
     }
 
+    public void process(IndexableObject object) {
+        if (bulkProcessor == null) {
+            return;
+        }
+        object.index(this.index).type(this.type);
+
+        try {
+            UpdateRequest updateRequest = new UpdateRequest(object.index(), object.type(), object.id())
+                    .doc(object.build()).upsert(object.build());
+            UpdateRequest updateRequestZh = new UpdateRequest(object.index(true), object.type(), object.id())
+                    .doc(object.build()).upsert(object.build());
+            bulkProcessor.add(updateRequest);
+            bulkProcessor.add(updateRequestZh);
+        } catch (IOException e) {
+            logger.error("es sink is error", e);
+        }
+    }
+
     public void shutdown () {
         try {
             if (bulkProcessor != null) {
@@ -70,8 +104,8 @@ public class StandardSink {
 
     private String[] getHosts(Settings settings) {
         String[] hosts = null;
-        if (StringUtils.isNotBlank(settings.get(Constants.ES_HOSTS))) {
-            hosts = settings.get(Constants.ES_HOSTS).split(",");
+        if (StringUtils.isNotBlank(settings.get(Constants.ES_HOSTS, Constants.DEFAULT_ES_HOSTS))) {
+            hosts = settings.get(Constants.ES_HOSTS, Constants.DEFAULT_ES_HOSTS).split(",");
         }
         return hosts;
     }

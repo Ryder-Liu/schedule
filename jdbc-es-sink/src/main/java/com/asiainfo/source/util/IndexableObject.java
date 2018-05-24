@@ -15,6 +15,8 @@
  */
 package com.asiainfo.source.util;
 
+import org.elasticsearch.common.xcontent.XContentBuilder;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -40,6 +42,13 @@ public interface IndexableObject {
     String index();
 
     /**
+     * Get the index
+     *
+     * @return the index
+     */
+    String index(boolean isZh);
+
+    /**
      * Set the type
      *
      * @param type the type
@@ -53,6 +62,14 @@ public interface IndexableObject {
      * @return the type
      */
     String type();
+
+    /**
+     * Set the mainKey
+     *
+     * @param mainKey the mainKey
+     * @return this object
+     */
+    IndexableObject setMainKey(String mainKey);
 
     /**
      * Set the ID
@@ -69,11 +86,11 @@ public interface IndexableObject {
      */
     String id();
 
-    IndexableObject source(Map<String, Object> source);
+    IndexableObject source(Map<String, Object> source, Map<String, Object> zhSource);
 
     Map<String, Object> source();
 
-    String build() throws IOException;
+    XContentBuilder build() throws IOException;
 
     boolean isEmpty();
 
