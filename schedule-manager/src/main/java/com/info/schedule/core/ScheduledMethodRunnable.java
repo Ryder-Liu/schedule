@@ -1,8 +1,8 @@
-package com.asiainfo.schedule.core;
+package com.info.schedule.core;
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.DynamicTaskManager;
-import com.asiainfo.schedule.ZKScheduleManager;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.DynamicTaskManager;
+import com.info.schedule.ZKScheduleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -14,15 +14,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ScheduledMethodRunnable implements Runnable {
 
 	private final TaskDefine taskDefine;
-	
+
 	private AtomicInteger count = new AtomicInteger();
-	
-	
+
+
 	public ScheduledMethodRunnable(TaskDefine taskDefine) {
 		this.taskDefine = taskDefine;
 	}
-	
-	
+
+
 	public int getRunTimes(){
 		return count.get();
 	}
@@ -49,7 +49,7 @@ public class ScheduledMethodRunnable implements Runnable {
 				method.invoke(bean);
 			}
 			count.incrementAndGet();
-			
+
 			if(StringUtils.isBlank(taskDefine.getCronExpression())
 					&& taskDefine.getDelay() == 0 && taskDefine.getPeriod() == 0){
 				try {
@@ -58,7 +58,7 @@ public class ScheduledMethodRunnable implements Runnable {
 					e.printStackTrace();
 				}
 			}
-			
+
 		}
 		catch (InvocationTargetException ex) {
 			ReflectionUtils.rethrowRuntimeException(ex.getTargetException());

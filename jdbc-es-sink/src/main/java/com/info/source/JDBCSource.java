@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.asiainfo.source;
+package com.info.source;
 
-import com.asiainfo.source.util.SQLCommand;
+import com.info.source.util.SQLCommand;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
 
@@ -128,7 +128,7 @@ public interface JDBCSource {
      * @return this context
      */
     JDBCSource setMaxRetryWait(TimeValue maxretrywait);
-    
+
     /**
      * Set result set query timeout
      *

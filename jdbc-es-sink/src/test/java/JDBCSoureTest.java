@@ -1,10 +1,10 @@
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.asiainfo.common.Constants;
+import com.info.common.Constants;
 
-import com.asiainfo.source.JDBCSource;
-import com.asiainfo.source.util.SQLCommand;
-import com.asiainfo.standard.StandardSource;
+import com.info.source.JDBCSource;
+import com.info.source.util.SQLCommand;
+import com.info.standard.StandardSource;
 import org.apache.http.client.utils.CloneUtils;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;

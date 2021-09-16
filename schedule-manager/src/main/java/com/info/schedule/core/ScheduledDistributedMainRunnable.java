@@ -1,10 +1,10 @@
-package com.asiainfo.schedule.core;
+package com.info.schedule.core;
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.DynamicTaskManager;
-import com.asiainfo.schedule.ZKScheduleManager;
-import com.asiainfo.schedule.util.ScheduleUtil;
-import com.asiainfo.schedule.zk.DistributedQueue;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.DynamicTaskManager;
+import com.info.schedule.ZKScheduleManager;
+import com.info.schedule.util.ScheduleUtil;
+import com.info.schedule.zk.DistributedQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,27 +19,27 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScheduledDistributedMainRunnable implements Runnable {
-	
+
 	private static transient Logger LOG = LoggerFactory.getLogger(ScheduledDistributedMainRunnable.class);
-	
+
 	private static final int THREAD_SIZE = 5;
-	
+
 	private static final int DISTRIBUTE_QUEUE_BLOCK_DATA_SIZE = 100;
 
 	private final TaskDefine taskDefine;
-	
+
 	private List<?> data = null;
-	
+
 	private int threadSize = THREAD_SIZE;
-	
+
 	private AtomicInteger count = new AtomicInteger();
-	
+
 	private DistributedQueue distributedQueue = null;
-	
+
 	private DistributedQueue checkDistributedQueue = null;
-	
+
 	private Set<String> subThreadTaskName = new HashSet<String>();
-	
+
 	public ScheduledDistributedMainRunnable(TaskDefine taskDefine) {
 		this.taskDefine = taskDefine;
 	}
@@ -47,14 +47,14 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 	public TaskDefine getTaskDefine() {
 		return taskDefine;
 	}
-	
+
 	public int getRunTimes(){
 		return count.get();
 	}
 
 	@Override
 	public void run() {
-		
+
 			if(StringUtils.isNotBlank(taskDefine.getBeforeMethod())
 					&& TaskDefine.TYPE_UNCODE_MULTI_MAIN_TASK.equals(taskDefine.getType())){
 				Object bean = null;
@@ -69,7 +69,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				int total = 0;
 				//执行before方法读数据，在未开始执行前可以重试
 				if(isReadDataAgain){
@@ -118,7 +118,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 						}
 					}
 				}
-					
+
 				//按照线程数添加需要执行的目标任务到集群节点上
 				boolean taskExsist = distributedQueue != null && distributedQueue.size() > 0;
 				if(taskExsist){
@@ -134,9 +134,9 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 							LOG.error("Distributed queue add sub task error, [name:"+subTaskDefine.stringKey()
 							+",key:"+(i+1)+"]", e);
 						}
-					}	
+					}
 				}
-				
+
 				//线程等待直到所有任务执行完成
 				int constrainQuitCount = 0;
 				while(null != distributedQueue && distributedQueue.size() >= 0){
@@ -150,7 +150,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 					if(constrainQuitCount >= 6*60){
 						break;
 					}
-					
+
 					if(null == data){
 						bean = ZKScheduleManager.getApplicationcontext().getBean(taskDefine.getTargetBean());
 						method = DynamicTaskManager.getMethod(bean, taskDefine.getBeforeMethod());
@@ -159,7 +159,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 							total = data.size();
 						}
 					}
-					
+
 					//检查任务是否遗漏
 					if(distributedQueue.size() == 0){
 						//计算queue长度
@@ -173,7 +173,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 								int index = 0;
 								List<?> subList = null;
 								String key = null;
-								
+
 								while(index < total){
 									if(index + DISTRIBUTE_QUEUE_BLOCK_DATA_SIZE < total){
 										subList = data.subList(index, index + DISTRIBUTE_QUEUE_BLOCK_DATA_SIZE);
@@ -195,7 +195,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 								}
 							}
 						}
-						
+
 						if(checkDistributedQueue.size() >= etotal){
 							try {
 								ConsoleManager.getScheduleManager().getScheduleDataManager()
@@ -220,7 +220,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 						}
 					}
 				}
-				
+
 				//执行after方法
 				if(StringUtils.isBlank(taskDefine.getAfterMethod())){
 					try {
@@ -258,7 +258,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 						throw new UndeclaredThrowableException(ex);
 					}
 				}
-				
+
 				//任务清理工作
 				if(subThreadTaskName.size() == 0){
 					if(taskDefine.getThreadNum() > 0){
@@ -267,7 +267,7 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 					for(int i = 0; i < threadSize; i++){
 						TaskDefine subTaskDefine  = taskDefine.buildDistributedSubTask(""+(i+1), null);
 						subThreadTaskName.add(subTaskDefine.stringKey());
-					}	
+					}
 				}
 				subThreadTaskName.add(taskDefine.stringKey());
 				String[] arr = new String[]{};
@@ -299,8 +299,8 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 			}
 			count.incrementAndGet();
 		}
-		
-					
+
+
 		private boolean readDataFromBeforeMethod(Object bean, Method method){
 			try {
 				ReflectionUtils.makeAccessible(method);
@@ -316,6 +316,6 @@ public class ScheduledDistributedMainRunnable implements Runnable {
 			}
 			return false;
 		}
-		
+
 
 }

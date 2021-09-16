@@ -1,5 +1,5 @@
-import com.asiainfo.common.Constants;
-import com.asiainfo.standard.StandardSink;
+import com.info.common.Constants;
+import com.info.standard.StandardSink;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Requests;

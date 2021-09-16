@@ -1,4 +1,4 @@
-package com.asiainfo.schedule;
+package com.info.schedule;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * Created by KevinBlandy on 2017/2/28 14:00
  */
 @SpringBootApplication
-@ComponentScan({"com.asiainfo.schedule"})
+@ComponentScan({"com.info.schedule"})
 @EnableScheduling
 @ServletComponentScan
 public class UncodeScheduleApplication {

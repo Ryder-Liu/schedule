@@ -1,4 +1,4 @@
-package com.asiainfo.schedule.core;
+package com.info.schedule.core;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,24 +11,24 @@ import java.util.Date;
  *
  */
 public class TaskDefine {
-	
+
 	public static final String TYPE_UNCODE_SINGLE_TASK = "uncode-single-task";
 	public static final String TYPE_UNCODE_MULTI_MAIN_TASK = "uncode-multi-main-task";
 	public static final String TYPE_UNCODE_MULTI_SUB_TASK = "uncode-multi-sub-task";
 	public static final String TYPE_SPRING_TASK = "spring-task";
 	public static final String TYPE_QUARTZ_TASK = "quartz";
-	
+
 	public static final String STATUS_ERROR = "error";
 	public static final String STATUS_STOP = "stop";
 	public static final String STATUS_RUNNING = "running";
 	public static final String STATUS_DISTRIBUTED_ALL_SUB_TASK_OVER = "subok";
 	public static final String STATUS_DISTRIBUTED_KEY = "status";
-	
+
     /**
      * 目标bean
      */
     private String targetBean;
-    
+
     /**
      * 目标方法
      */
@@ -258,11 +258,11 @@ public class TaskDefine {
 	public void setPeriod(long period) {
 		this.period = period;
 	}
-	
+
 	/**
 	 * 任务间隔时间
      * <pre>
-	 * 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒 
+	 * 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒
      * </pre>
 	 * @return
 	 */
@@ -273,7 +273,7 @@ public class TaskDefine {
 	/**
 	 * 任务间隔时间
      * <pre>
-	 * 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒 
+	 * 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒
      * </pre>
 	 * @param delay
 	 */
@@ -296,7 +296,7 @@ public class TaskDefine {
 	public void setCurrentServer(String currentServer) {
 		this.currentServer = currentServer;
 	}
-	
+
 	/**
 	 * 获取任务标识，根据不同的任务类型封装
 	 * @return
@@ -309,7 +309,7 @@ public class TaskDefine {
 		}
 		return getSingalKey();
 	}
-	
+
 	/**
 	 * 获取单任务标识
 	 * @return
@@ -327,7 +327,7 @@ public class TaskDefine {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 获取分布式任务主任务标识
 	 * @return
@@ -344,7 +344,7 @@ public class TaskDefine {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 获取分布式任务子任务标识
 	 * @return
@@ -392,7 +392,7 @@ public class TaskDefine {
 
 	/**
 	 * 设置任务类型
-	 * 
+	 *
 	 * @param type
 	 */
 	public void setType(String type) {
@@ -483,8 +483,8 @@ public class TaskDefine {
 	public void setExtKeySuffix(String extKeySuffix) {
 		this.extKeySuffix = extKeySuffix;
 	}
-	
-	
+
+
 	/**
 	 * 任务开始前自动调用方法名称
      * <pre>
@@ -528,7 +528,7 @@ public class TaskDefine {
 	public void setAfterMethod(String afterMethod) {
 		this.afterMethod = afterMethod;
 	}
-	
+
 	/**
 	 * 任务线程数量
 	 * @return 任务线程数量
@@ -653,7 +653,7 @@ public class TaskDefine {
         result = prime * result + threadNum;
         return result;
     }
-    
+
 	@SuppressWarnings("deprecation")
 	@Override
     public boolean equals(Object obj) {
@@ -691,12 +691,12 @@ public class TaskDefine {
         if (!ObjectUtils.equals(this.subSuffix, ou.subSuffix)) {
             return false;
         }
-        return this.period == ou.period 
+        return this.period == ou.period
         		&& this.delay == ou.delay
         		&& this.threadNum == ou.threadNum;
     }
-	
-	
-	
-	
+
+
+
+
 }

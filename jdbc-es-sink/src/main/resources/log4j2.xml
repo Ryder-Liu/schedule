@@ -23,7 +23,7 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="com.asiainfo.schedule" level="info" additivity="false">
+		<Logger name="com.info.schedule" level="info" additivity="false">
 			<AppenderRef ref="ConsoleAppender" />
 		</Logger>
 		<Root level="info">

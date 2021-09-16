@@ -1,11 +1,11 @@
-package com.asiainfo.standard;
+package com.info.standard;
 
-import com.asiainfo.client.BulkProcessorBuilder;
-import com.asiainfo.client.ElasticSearchClientBuilder;
-import com.asiainfo.common.Constants;
-import com.asiainfo.common.Utils;
-import com.asiainfo.source.Sink;
-import com.asiainfo.source.util.IndexableObject;
+import com.info.client.BulkProcessorBuilder;
+import com.info.client.ElasticSearchClientBuilder;
+import com.info.common.Constants;
+import com.info.common.Utils;
+import com.info.source.Sink;
+import com.info.source.util.IndexableObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkProcessor;

@@ -1,7 +1,7 @@
-package com.asiainfo.shcedule;
+package com.info.shcedule;
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.core.TaskDefine;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.core.TaskDefine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

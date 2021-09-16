@@ -1,4 +1,4 @@
-package com.asiainfo.common;
+package com.info.common;
 
 import org.elasticsearch.common.unit.TimeValue;
 

@@ -1,9 +1,9 @@
-package com.asiainfo.schedule.test;
+package com.info.schedule.test;
 
 import com.alibaba.fastjson.JSON;
-import com.asiainfo.common.Constants;
-import com.asiainfo.source.JDBCSource;
-import com.asiainfo.standard.StandardSource;
+import com.info.common.Constants;
+import com.info.source.JDBCSource;
+import com.info.standard.StandardSource;
 import org.elasticsearch.common.settings.Settings;
 import org.springframework.stereotype.Component;
 

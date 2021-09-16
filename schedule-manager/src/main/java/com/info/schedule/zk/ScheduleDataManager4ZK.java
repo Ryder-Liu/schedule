@@ -1,10 +1,10 @@
-package com.asiainfo.schedule.zk;
+package com.info.schedule.zk;
 
-import com.asiainfo.schedule.DynamicTaskManager;
-import com.asiainfo.schedule.core.IScheduleDataManager;
-import com.asiainfo.schedule.core.ScheduleServer;
-import com.asiainfo.schedule.core.TaskDefine;
-import com.asiainfo.schedule.util.ScheduleUtil;
+import com.info.schedule.DynamicTaskManager;
+import com.info.schedule.core.IScheduleDataManager;
+import com.info.schedule.core.ScheduleServer;
+import com.info.schedule.core.TaskDefine;
+import com.info.schedule.util.ScheduleUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -20,13 +20,13 @@ import java.util.*;
 
 /**
  * zk实现类
- * 
+ *
  * @author juny.ye
  *
  */
 public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	private static final transient Logger LOG = LoggerFactory.getLogger(ScheduleDataManager4ZK.class);
-	
+
 	private static final String NODE_SERVER = "server";
 	private static final String NODE_TASK = "task";
 	private static final long SERVER_EXPIRE_TIME = 5000 * 3;
@@ -38,7 +38,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	private long zkBaseTime = 0;
 	private long loclaBaseTime = 0;
 	private Random random;
-	
+
     public ScheduleDataManager4ZK(ZKManager aZkManager) throws Exception {
     	this.zkManager = aZkManager;
     	gson = new GsonBuilder().registerTypeAdapter(Timestamp.class,new TimestampTypeAdapter()).setDateFormat("yyyy-MM-dd HH:mm:ss").create();
@@ -56,8 +56,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
         if(Math.abs(this.zkBaseTime - this.loclaBaseTime) > 5000){
         	LOG.error("请注意，Zookeeper服务器时间与本地时间相差 ： " + Math.abs(this.zkBaseTime - this.loclaBaseTime) +" ms");
         }
-	}	
-	
+	}
+
 	public ZooKeeper getZooKeeper() throws Exception {
 		return this.zkManager.getZooKeeper();
 	}
@@ -100,22 +100,22 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		String zkServerPath = pathServer + "/" + id.toString() +"$";
 		realPath = this.getZooKeeper().create(zkServerPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT_SEQUENTIAL);
 		server.setUuid(realPath.substring(realPath.lastIndexOf("/") + 1));
-		
+
 		Timestamp heartBeatTime = new Timestamp(getSystemTime());
 		server.setHeartBeatTime(heartBeatTime);
-		
+
 		String valueString = this.gson.toJson(server);
 		this.getZooKeeper().setData(realPath,valueString.getBytes(),-1);
 		server.setRegister(true);
 	}
-	
+
 	public List<String> loadAllScheduleServer() throws Exception {
 		String zkPath = this.pathServer;
 		List<String> names = this.getZooKeeper().getChildren(zkPath,false);
 		Collections.sort(names);
 		return names;
 	}
-	
+
 	public void clearExpireScheduleServer() throws Exception{
 		 String zkPath = this.pathServer;
 		 if(this.getZooKeeper().exists(zkPath,false)== null){
@@ -167,7 +167,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			server.setRegister(false);
 		}
 	}
-	
+
 	public List<String> loadScheduleServerNames() throws Exception {
 		String zkPath = this.pathServer;
 		if (this.getZooKeeper().exists(zkPath, false) == null) {
@@ -184,7 +184,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		return serverList;
 	}
 
-	
+
 	@Override
 	public void assignTask(String currentUuid, List<String> taskServerList) throws Exception {
 		 if(!this.isLeader(currentUuid, taskServerList)){
@@ -224,7 +224,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 									 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
 								 }else{
 									 hasAssignSuccess = true;
-									 continue; 
+									 continue;
 								 }
 							 }
 							 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
@@ -234,17 +234,17 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						 }
 					 }
 
-				 }	
+				 }
 			 }else{
 				 if(LOG.isDebugEnabled()){
 					 LOG.debug(currentUuid +":没有集群任务");
-				 }	
+				 }
 			 }
-			 
+
 			 //删除48小时前分布式任务历史记录
 			 deleteDistributedHistoryInfo();
 		 }
-		 
+
 	}
 
 	private void assignServer2Task(List<String> taskServerList, String taskPath) throws Exception {
@@ -265,7 +265,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	public boolean isLeader(String uuid,List<String> serverList){
     	return uuid.equals(getLeader(serverList));
     }
-	
+
 	private String getLeader(List<String> serverList){
 		if(serverList == null || serverList.size() ==0){
 			return "";
@@ -282,7 +282,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
     	}
     	return leader;
     }
-	
+
 	private long getSystemTime(){
 		return this.zkBaseTime + ( System.currentTimeMillis() - this.loclaBaseTime);
 	}
@@ -298,8 +298,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		return isOwner;
 	}
-	
-	
+
+
 	@Override
 	public boolean isRunning(String name) throws Exception {
 		boolean isRunning = true;
@@ -316,13 +316,13 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		return isRunning;
 	}
-	
+
 	@Override
 	public boolean saveRunningInfo(String name, String uuid) throws Exception {
 		return saveRunningInfo(name, uuid, -1, null);
 	}
 
-	
+
 	@Override
 	public boolean saveRunningInfo(String name, String uuid, int runTimes, String msg) throws Exception {
 		String zkPath = this.pathTask + "/" + name;
@@ -386,7 +386,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
 		}
 	}
-	
+
 	@Override
 	public void updateTask(TaskDefine taskDefine) throws Exception {
 		String zkPath = this.pathTask;
@@ -410,7 +410,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
 		}
 	}
-	
+
 	@Deprecated
 	@Override
 	public void delTask(String targetBean, String targetMethod) throws Exception {
@@ -422,7 +422,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			}
 		}
 	}
-	
+
 	@Override
 	public void delTask(TaskDefine taskDefine) throws Exception {
 		String zkPath = this.pathTask;
@@ -439,8 +439,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			}
 		}
 	}
-	
-	
+
+
 	@Override
 	public List<TaskDefine> selectTask() throws Exception {
 		String zkPath = this.pathTask;
@@ -582,7 +582,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		DistributedQueue distributedQueue = new DistributedQueue(this.zkManager, name);
 		return distributedQueue;
 	}
-	
+
 	private List<String> getAllChildren(String path){
 		Set<String> allPaths = new HashSet<String>();
 		List<String> nodes = getChildren(path);
@@ -703,13 +703,13 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 					}
 				}
 		}
-		
+
 	}
-	
 
-	
 
-	
+
+
+
 
 
 }

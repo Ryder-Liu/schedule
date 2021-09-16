@@ -1,5 +1,5 @@
 
-package com.asiainfo.schedule.quartz;
+package com.info.schedule.quartz;
 
 /*
  * Copyright 2002-2012 the original author or authors.
@@ -17,8 +17,8 @@ package com.asiainfo.schedule.quartz;
  * limitations under the License.
  */
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.core.TaskDefine;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.core.TaskDefine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.*;
@@ -310,8 +310,8 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		@Override
 		protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 				TaskDefine taskDefine = new TaskDefine();
-				MethodInvokingJob methodInvokingJob = (com.asiainfo.schedule.quartz.MethodInvokingJobDetailFactoryBean.MethodInvokingJob) context.getJobInstance();
-				com.asiainfo.schedule.quartz.MethodInvokingJobDetailFactoryBean methodInvokingJobDetailFactoryBean= (com.asiainfo.schedule.quartz.MethodInvokingJobDetailFactoryBean)methodInvokingJob.methodInvoker;
+				MethodInvokingJob methodInvokingJob = (MethodInvokingJobDetailFactoryBean.MethodInvokingJob) context.getJobInstance();
+				MethodInvokingJobDetailFactoryBean methodInvokingJobDetailFactoryBean= (MethodInvokingJobDetailFactoryBean)methodInvokingJob.methodInvoker;
 				taskDefine.setTargetBean(methodInvokingJobDetailFactoryBean.getTargetBeanName());
 				taskDefine.setTargetMethod(this.methodInvoker.getTargetMethod());
 				taskDefine.setType(TaskDefine.TYPE_QUARTZ_TASK);

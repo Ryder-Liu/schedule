@@ -1,11 +1,11 @@
-package com.asiainfo.standard;
+package com.info.standard;
 
-import com.asiainfo.common.Constants;
-import com.asiainfo.source.JDBCSource;
-import com.asiainfo.source.Sink;
-import com.asiainfo.source.util.IndexableObject;
-import com.asiainfo.source.util.PlainIndexableObject;
-import com.asiainfo.source.util.SQLCommand;
+import com.info.common.Constants;
+import com.info.source.JDBCSource;
+import com.info.source.Sink;
+import com.info.source.util.IndexableObject;
+import com.info.source.util.PlainIndexableObject;
+import com.info.source.util.SQLCommand;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.joda.time.DateTime;

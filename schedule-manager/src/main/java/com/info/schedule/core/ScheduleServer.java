@@ -1,6 +1,6 @@
-package com.asiainfo.schedule.core;
+package com.info.schedule.core;
 
-import com.asiainfo.schedule.util.ScheduleUtil;
+import com.info.schedule.util.ScheduleUtil;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * 调度服务器信息定义
- * 
+ *
  * @author juny.ye
  *
  */
@@ -60,9 +60,9 @@ public class ScheduleServer {
      * 数据版本号
      */
     private long version;
-    
+
     private boolean isRegister;
-    
+
     public ScheduleServer() {
 
     }

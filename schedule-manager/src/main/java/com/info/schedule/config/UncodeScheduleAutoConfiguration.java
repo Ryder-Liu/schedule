@@ -1,8 +1,8 @@
-package com.asiainfo.schedule.config;
+package com.info.schedule.config;
 
-import com.asiainfo.schedule.ZKScheduleManager;
-import com.asiainfo.schedule.core.TaskDefine;
-import com.asiainfo.schedule.util.ScheduleUtil;
+import com.info.schedule.ZKScheduleManager;
+import com.info.schedule.core.TaskDefine;
+import com.info.schedule.util.ScheduleUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +22,12 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties({UncodeScheduleConfig.class})
 public class UncodeScheduleAutoConfiguration {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(UncodeScheduleAutoConfiguration.class);
-	
+
 	@Autowired
 	private UncodeScheduleConfig uncodeScheduleConfig;
-	
+
 	@Bean(name = "zkScheduleManager", initMethod="init")
 	public ZKScheduleManager commonMapper(){
 		ZKScheduleManager zkScheduleManager = new ZKScheduleManager();
@@ -37,7 +37,7 @@ public class UncodeScheduleAutoConfiguration {
 		LOGGER.info("=====>ZKScheduleManager inited..");
 		return zkScheduleManager;
 	}
-	
+
 	private List<TaskDefine> initAllTask(){
 		List<TaskDefine> list = new ArrayList<TaskDefine>();
 		int total = 0;
@@ -96,21 +96,21 @@ public class UncodeScheduleAutoConfiguration {
 					taskDefine.setDelay(Long.valueOf(value));
 				}
 			}
-			
+
 			if(uncodeScheduleConfig.getParams() != null){
 				 String value = uncodeScheduleConfig.getParams().get(i);
 				if(StringUtils.isNotBlank(value)){
 					taskDefine.setParams(value);
 				}
 			}
-			
+
 			if(uncodeScheduleConfig.getType() != null){
 				 String value = uncodeScheduleConfig.getType().get(i);
 				if(StringUtils.isNotBlank(value)){
 					taskDefine.setType(value);
 				}
 			}
-			
+
 			if(uncodeScheduleConfig.getExtKeySuffix() != null){
 				 String value = uncodeScheduleConfig.getExtKeySuffix().get(i);
 				if(StringUtils.isNotBlank(value)){
@@ -139,7 +139,7 @@ public class UncodeScheduleAutoConfiguration {
 		}
 		return list;
 	}
-	
-	
-	
+
+
+
 }

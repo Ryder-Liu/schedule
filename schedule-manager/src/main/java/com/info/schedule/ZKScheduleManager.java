@@ -1,8 +1,9 @@
-package com.asiainfo.schedule;
+package com.info.schedule;
 
-import com.asiainfo.schedule.core.*;
-import com.asiainfo.schedule.zk.ScheduleDataManager4ZK;
-import com.asiainfo.schedule.zk.ZKManager;
+import com.info.schedule.core.*;
+import com.info.schedule.zk.ScheduleDataManager4ZK;
+import com.info.schedule.zk.ZKManager;
+import com.info.schedule.core.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,25 +24,25 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 调度器核心管理
- * 
+ *
  * @author juny.ye
- * 
+ *
  */
 public class ZKScheduleManager extends ThreadPoolTaskScheduler implements ApplicationContextAware {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int DEFAULT_POOL_SIZE = 20;
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(ZKScheduleManager.class);
-	
+
 	private final CountDownLatch downLatch = new CountDownLatch(1);
 
 	private Map<String, String> zkConfig;
-	
+
 	protected ZKManager zkManager;
 
 	private IScheduleDataManager scheduleDataManager;
@@ -67,16 +68,16 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private boolean isScheduleServerRegister = true;
 
 	private static ApplicationContext applicationcontext;
-	
+
 	private Map<String, Boolean> isOwnerMap = new ConcurrentHashMap<String, Boolean>();
 
 	private Timer hearBeatTimer;
 	private Lock initLock = new ReentrantLock();
 	private boolean isStopSchedule = false;
 	private Lock registerLock = new ReentrantLock();
-	
+
 	private List<TaskDefine> initTaskDefines = new ArrayList<TaskDefine>();
-	
+
 	private volatile String errorMessage = "No config Zookeeper connect information";
 	private InitialThread initialThread;
 
@@ -168,10 +169,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
 	 * 根据当前调度服务器的信息，重新计算分配所有的调度任务
 	 * 任务的分配是需要加锁，避免数据分配错误。为了避免数据锁带来的负面作用，通过版本号来达到锁的目的
-	 * 
+	 *
 	 * 1、获取任务状态的版本号 2、获取所有的服务器注册信息和任务队列信息 3、清除已经超过心跳周期的服务器注册信息 3、重新计算任务分配
 	 * 4、更新任务状态的版本号【乐观锁】 5、根系任务队列的分配信息
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void assignScheduleTask() throws Exception {
@@ -199,7 +200,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
 	 * 定时向数据配置中心更新当前服务器的心跳信息。 如果发现本次更新的时间已经超过了服务器死亡的心跳周期，则不能再向服务器更新信息。
 	 * 而应该当作新的服务器，进行重新注册。
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void refreshScheduleServer() throws Exception {
@@ -224,7 +225,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			}
 		}
 	}
-	
+
 	public void checkLocalTask() throws Exception {
 		// 检查系统任务执行情况
 		scheduleDataManager.checkLocalTask(this.currenScheduleServer.getUuid());
@@ -232,7 +233,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 
 	/**
 	 * 在Zk状态正常后回调数据初始化
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void initialData() throws Exception {
@@ -247,7 +248,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 						+ this.currenScheduleServer.getUuid() + "-HearBeat");
 			}
 			hearBeatTimer.schedule(new HeartBeatTimerTask(this), 1000, this.timerInterval);
-			
+
 			//初始化启动数据
 			if(initTaskDefines != null && initTaskDefines.size() > 0){
 				for(TaskDefine taskDefine : initTaskDefines){
@@ -256,7 +257,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			}
 		}
 	}
-	
+
 	private Runnable taskWrapper(final Runnable task){
 		return new Runnable(){
 			public void run(){
@@ -296,7 +297,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			}
 		};
 	}
-	
+
 	private TaskDefine resolveTaskName(final Runnable task) {
 		Method targetMethod = null;
 		TaskDefine taskDefine = new TaskDefine();
@@ -325,7 +326,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	    		taskDefine.setTargetMethod(targetMethod.getName());
 	    	}
 		}
-		
+
 		return taskDefine;
 	}
 
@@ -399,11 +400,11 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			throws BeansException {
 		ZKScheduleManager.applicationcontext = applicationcontext;
 	}
-	
+
 	public void setZkManager(ZKManager zkManager) {
 		this.zkManager = zkManager;
 	}
-	
+
 	public ZKManager getZkManager() {
 		return zkManager;
 	}
@@ -411,13 +412,13 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public void setZkConfig(Map<String, String> zkConfig) {
 		this.zkConfig = zkConfig;
 	}
-	
+
 	/**
      * 使用fixedRate的方式提交任务调度请求
      * <pre>
-     * 任务首次启动时间未设置，任务池将会尽可能早的启动任务 
+     * 任务首次启动时间未设置，任务池将会尽可能早的启动任务
      * </pre>
-     * 
+     *
      * @param task　待执行的任务　
      * @param period　两次任务启动时间之间的间隔时间，默认单位是毫秒
      * @return 任务句柄
@@ -437,10 +438,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
         return super.scheduleAtFixedRate(taskWrapper(task), period);
     }
-	
+
     /**
-     * 提交任务调度请求 
-     * 
+     * 提交任务调度请求
+     *
      * @param task　待执行任务　　
      * @param trigger 使用Trigger指定任务调度规则
      * @return 任务句柄
@@ -469,10 +470,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
      * 提交任务调度请求
      * <pre>
-     * 注意任务只执行一次，使用startTime指定其启动时间  
+     * 注意任务只执行一次，使用startTime指定其启动时间
      * </pre>
      * @param task　待执行任务
-     * @param startTime 任务启动时间  
+     * @param startTime 任务启动时间
      * @return 任务句柄
      */
 	public ScheduledFuture<?> schedule(Runnable task, Date startTime) {
@@ -498,7 +499,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			downLatch.countDown();
 		}
 	}
-	
+
 	private boolean isUncodeTask(Runnable task){
 		if(task instanceof ScheduledMethodRunnable){
 			return true;
@@ -513,10 +514,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
      * 使用fixedRate的方式提交任务调度请求
      * <pre>
-     * 任务首次启动时间由传入参数指定 
+     * 任务首次启动时间由传入参数指定
      * </pre>
      * @param task　待执行的任务　
-     * @param startTime　任务启动时间  
+     * @param startTime　任务启动时间
      * @param period　两次任务启动时间之间的间隔时间，默认单位是毫秒
      * @return 任务句柄
      */
@@ -536,16 +537,16 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 		return super.scheduleAtFixedRate(taskWrapper(task), startTime, period);
 	}
-	
+
 
 	/**
      *  使用fixedDelay的方式提交任务调度请求
      * <pre>
-     *  任务首次启动时间由传入参数指定 
+     *  任务首次启动时间由传入参数指定
      * </pre>
      * @param task 待执行任务
      * @param startTime 任务启动时间
-     * @param delay 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒 
+     * @param delay 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒
      * @return 任务句柄
      */
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Date startTime, long delay) {
@@ -565,14 +566,14 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		return super.scheduleWithFixedDelay(taskWrapper(task), startTime, delay);
 	}
 
-	
+
 	/**
      * 使用fixedDelay的方式提交任务调度请求
      * <pre>
-     * 任务首次启动时间未设置，任务池将会尽可能早的启动任务 
+     * 任务首次启动时间未设置，任务池将会尽可能早的启动任务
      * </pre>
      * @param task 待执行任务
-     * @param delay 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒 
+     * @param delay 上一次任务结束时间与下一次任务开始时间的间隔时间，单位默认是毫秒
      * @return 任务句柄
      */
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
@@ -590,7 +591,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
 	}
-	
+
 	public boolean checkAdminUser(String account, String password){
 		if(StringUtils.isBlank(account) || StringUtils.isBlank(password)){
 			return false;
@@ -602,7 +603,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 		return false;
 	}
-	
+
 	public String getScheduleServerUUid(){
 		if(null != currenScheduleServer){
 			return currenScheduleServer.getUuid();
@@ -617,7 +618,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public static ApplicationContext getApplicationcontext() {
 		return ZKScheduleManager.applicationcontext;
 	}
-	
+
 	public void setInitTaskDefines(List<TaskDefine> initTaskDefines) {
 		this.initTaskDefines = initTaskDefines;
 	}
@@ -646,7 +647,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			}
 		}
 	}
-	
-	
+
+
 
 }

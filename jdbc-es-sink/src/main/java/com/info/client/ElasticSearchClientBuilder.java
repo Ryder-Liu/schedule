@@ -1,6 +1,6 @@
-package com.asiainfo.client;
+package com.info.client;
 
-import com.asiainfo.common.Constants;
+import com.info.common.Constants;
 import com.google.common.base.Throwables;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;

@@ -1,8 +1,8 @@
-package com.asiainfo.schedule.web;
+package com.info.schedule.web;
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.core.TaskDefine;
-import com.asiainfo.schedule.test.JdbcToESTask;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.core.TaskDefine;
+import com.info.schedule.taskTemplate.JdbcToESTask;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

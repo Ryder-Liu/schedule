@@ -1,9 +1,9 @@
-package com.asiainfo.schedule;
+package com.info.schedule;
 
-import com.asiainfo.schedule.core.ScheduledDistributedMainRunnable;
-import com.asiainfo.schedule.core.ScheduledDistributedSubRunnable;
-import com.asiainfo.schedule.core.ScheduledMethodRunnable;
-import com.asiainfo.schedule.core.TaskDefine;
+import com.info.schedule.core.ScheduledDistributedMainRunnable;
+import com.info.schedule.core.ScheduledDistributedSubRunnable;
+import com.info.schedule.core.ScheduledMethodRunnable;
+import com.info.schedule.core.TaskDefine;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ import java.util.concurrent.ScheduledFuture;
 
 
 public class DynamicTaskManager {
-	
+
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(DynamicTaskManager.class);
-	
-	
+
+
 	private static final Map<String, ScheduledFuture<?>> SCHEDULE_FUTURES = new ConcurrentHashMap<String, ScheduledFuture<?>>();
 	private static final Map<String, TaskDefine> TASKS = new ConcurrentHashMap<String, TaskDefine>();
-	
-	
+
+
 	public static void stopTask(String taskName){
 		if(SCHEDULE_FUTURES.containsKey(taskName)){
 			TaskDefine taskDefine = TASKS.get(taskName);
@@ -60,7 +60,7 @@ public class DynamicTaskManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * 启动子定时任务
 	 * @param taskDefine 任务定义
@@ -83,7 +83,7 @@ public class DynamicTaskManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * 启动分布式定时任务
 	 * @param taskDefine 任务定义
@@ -120,7 +120,7 @@ public class DynamicTaskManager {
 			}
 		}
 	}
-	
+
 	public static void clearLocalTask(List<String> existsTaskName){
 		for(String name:SCHEDULE_FUTURES.keySet()){
 			if(!existsTaskName.contains(name)){
@@ -134,7 +134,7 @@ public class DynamicTaskManager {
 	 * 启动子定时任务
 	 * 支持：
 	 * 1 startTime，指定时间执行
-	 * 
+	 *
 	 * @param taskDefine 任务定义
 	 */
 	public static void scheduleMutilSubTask(TaskDefine taskDefine){
@@ -172,7 +172,7 @@ public class DynamicTaskManager {
 		}
 	}
 
-	
+
 	/**
 	 * 启动定时任务
 	 * 支持：
@@ -180,7 +180,7 @@ public class DynamicTaskManager {
 	 * 2 startTime + period,指定时间，定时进行
 	 * 3 period，定时进行，立即开始
 	 * 4 startTime，指定时间执行
-	 * 
+	 *
 	 * @param taskDefine 任务定义
 	 */
 	public static void scheduleSingleTask(TaskDefine taskDefine){
@@ -212,7 +212,7 @@ public class DynamicTaskManager {
 							}
 						}
 					}
-						
+
 					if(null != scheduledFuture){
 						SCHEDULE_FUTURES.put(scheduleKey, scheduledFuture);
 						LOGGER.debug("Building new schedule task, target bean "+ taskDefine.getTargetBean() + " target method " + taskDefine.getTargetMethod() + ".");
@@ -227,7 +227,7 @@ public class DynamicTaskManager {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * 封装任务对象
 	 * @param taskDefine 任务定义
@@ -253,7 +253,7 @@ public class DynamicTaskManager {
 		}
 		return scheduledMethodRunnable;
 	}
-	
+
 	/**
 	 * 封装任务对象
 	 * @param taskDefine 任务定义
@@ -273,9 +273,9 @@ public class DynamicTaskManager {
 		}
 		return scheduledMethodRunnable;
 	}
-	
+
 	public static Method getMethod(Object bean, String targetMethod, Class<?>... paramTypes){
-		
+
 		Method method = null;
 		Class<?> clazz;
 		if (AopUtils.isAopProxy(bean)) {

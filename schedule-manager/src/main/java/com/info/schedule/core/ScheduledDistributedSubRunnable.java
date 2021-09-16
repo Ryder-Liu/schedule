@@ -1,11 +1,11 @@
-package com.asiainfo.schedule.core;
+package com.info.schedule.core;
 
-import com.asiainfo.schedule.ConsoleManager;
-import com.asiainfo.schedule.DynamicTaskManager;
-import com.asiainfo.schedule.ZKScheduleManager;
-import com.asiainfo.schedule.util.ScheduleUtil;
-import com.asiainfo.schedule.zk.DistributedQueue;
-import com.asiainfo.schedule.zk.TimestampTypeAdapter;
+import com.info.schedule.ConsoleManager;
+import com.info.schedule.DynamicTaskManager;
+import com.info.schedule.ZKScheduleManager;
+import com.info.schedule.util.ScheduleUtil;
+import com.info.schedule.zk.DistributedQueue;
+import com.info.schedule.zk.TimestampTypeAdapter;
 import com.google.gson.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,27 +17,27 @@ import java.sql.Timestamp;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScheduledDistributedSubRunnable implements Runnable {
-	
+
 	private static transient Logger LOG = LoggerFactory.getLogger(ScheduledDistributedSubRunnable.class);
-	
+
 	private Gson gson = new GsonBuilder().registerTypeAdapter(Timestamp.class,new TimestampTypeAdapter()).setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 
 	private final TaskDefine taskDefine;
-	
+
 	private AtomicInteger count = new AtomicInteger();
-	
+
 	private AtomicInteger runTimes = new AtomicInteger();
-	
+
 	private AtomicInteger noneCount = new AtomicInteger();
-	
+
 	private DistributedQueue distributedQueue = null;
-	
+
 	private DistributedQueue checkDistributedQueue = null;
-	
+
 	public ScheduledDistributedSubRunnable(TaskDefine taskDefine) {
 		this.taskDefine = taskDefine;
 	}
-	
+
 	public int getRunTimes(){
 		return runTimes.get();
 	}
@@ -74,7 +74,7 @@ public class ScheduledDistributedSubRunnable implements Runnable {
 			if(StringUtils.isNotBlank(size)){
 				index = Integer.valueOf(size);
 			}
-			
+
 			bean = ZKScheduleManager.getApplicationcontext().getBean(taskDefine.getTargetBean());
 			method = DynamicTaskManager.getMethod(bean, taskDefine.getTargetMethod(), String.class);
 			ReflectionUtils.makeAccessible(method);
@@ -131,8 +131,8 @@ public class ScheduledDistributedSubRunnable implements Runnable {
 				}
 			}
 		}
-		
-		
+
+
 	}
 
 }

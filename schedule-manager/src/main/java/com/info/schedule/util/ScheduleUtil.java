@@ -1,4 +1,4 @@
-package com.asiainfo.schedule.util;
+package com.info.schedule.util;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,18 +15,18 @@ import java.util.regex.Pattern;
 
 /**
  * 调度处理工具类
- * 
+ *
  * @author juny.ye
  *
  */
 public class ScheduleUtil {
-	
+
     public static String OWN_SIGN_BASE ="BASE";
-    
+
     public static final String LOCALHOST = "127.0.0.1";
 
     public static final String ANYHOST = "0.0.0.0";
-    
+
     public static final String DOUBLE_CHECK_DISTRIBUTE_NAME_SUFFIX = "_check";
 
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
@@ -49,7 +49,7 @@ public class ScheduleUtil {
             throw new RuntimeException(ex);
         }
     }
-    
+
 	public static String getLocalIP(){
 		String localip = null;// 本地IP，如果没有配置外网IP则返回它
 		String netip = null;// 外网IP
@@ -87,7 +87,7 @@ public class ScheduleUtil {
 			return localip;
 		}
 	}
-    
+
 
     public static String transferDataToString(Date d){
         SimpleDateFormat DATA_FORMAT_yyyyMMddHHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -117,7 +117,7 @@ public class ScheduleUtil {
          }else{
              return taskType;
          }
-         
+
     }
     public static String splitOwnsignFromTaskType(String taskType){
          if(taskType.contains("$")){
@@ -126,7 +126,7 @@ public class ScheduleUtil {
              return OWN_SIGN_BASE;
          }
     }
-    
+
     public static String buildScheduleKey(String beanName, String methodName, String extKeySuffix){
     	String result = beanName + "#" + methodName;
     	if(StringUtils.isNotBlank(extKeySuffix)){
@@ -134,16 +134,16 @@ public class ScheduleUtil {
     	}
     	return result;
     }
-    
-    
+
+
     public static String buildScheduleKey(String beanName, String methodName){
     	return buildScheduleKey(beanName, methodName, null);
     }
-    
+
     public static String buildDoubleCheckDistributedName(String beanName){
     	return beanName + DOUBLE_CHECK_DISTRIBUTE_NAME_SUFFIX;
     }
-    
+
     /**
      * 分配任务数量
      * @param serverNum 总的服务器数量
@@ -168,7 +168,7 @@ public class ScheduleUtil {
         }
         return taskNums;
     }
-    
+
     private static String printArray(int[] items){
         String s="";
         for(int i=0;i<items.length;i++){
@@ -177,7 +177,7 @@ public class ScheduleUtil {
         }
         return s;
     }
-    
+
     private static boolean isValidAddress(InetAddress address) {
         if (address == null || address.isLoopbackAddress())
             return false;
@@ -187,11 +187,11 @@ public class ScheduleUtil {
                 && ! LOCALHOST.equals(name)
                 && IP_PATTERN.matcher(name).matches());
     }
-    
+
     public static void main(String[] args) {
-    	
+
     	System.out.println(getLocalIP());
-    	
+
         /*System.out.println(printArray(assignTaskNumber(1,10,0)));
         System.out.println(printArray(assignTaskNumber(2,10,0)));
         System.out.println(printArray(assignTaskNumber(3,10,0)));
@@ -199,12 +199,12 @@ public class ScheduleUtil {
         System.out.println(printArray(assignTaskNumber(5,10,0)));
         System.out.println(printArray(assignTaskNumber(6,10,0)));
         System.out.println(printArray(assignTaskNumber(7,10,0)));
-        System.out.println(printArray(assignTaskNumber(8,10,0)));       
+        System.out.println(printArray(assignTaskNumber(8,10,0)));
         System.out.println(printArray(assignTaskNumber(9,10,0)));
         System.out.println(printArray(assignTaskNumber(10,10,0)));
-        
+
         System.out.println("-----------------");
-        
+
         System.out.println(printArray(assignTaskNumber(1,10,3)));
         System.out.println(printArray(assignTaskNumber(2,10,3)));
         System.out.println(printArray(assignTaskNumber(3,10,3)));
@@ -212,9 +212,9 @@ public class ScheduleUtil {
         System.out.println(printArray(assignTaskNumber(5,10,3)));
         System.out.println(printArray(assignTaskNumber(6,10,3)));
         System.out.println(printArray(assignTaskNumber(7,10,3)));
-        System.out.println(printArray(assignTaskNumber(8,10,3)));       
+        System.out.println(printArray(assignTaskNumber(8,10,3)));
         System.out.println(printArray(assignTaskNumber(9,10,3)));
         System.out.println(printArray(assignTaskNumber(10,10,3)));*/
-        
+
     }
 }

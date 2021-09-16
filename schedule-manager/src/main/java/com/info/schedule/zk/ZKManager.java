@@ -1,6 +1,6 @@
-package com.asiainfo.schedule.zk;
+package com.info.schedule.zk;
 
-import com.asiainfo.schedule.core.Version;
+import com.info.schedule.core.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
@@ -20,37 +20,37 @@ import java.util.concurrent.CountDownLatch;
 
 
 /**
- * 
+ *
  * @author juny.ye
  *
  */
 public class ZKManager{
-    
+
     private static transient Logger log = LoggerFactory.getLogger(ZKManager.class);
     private ZooKeeper zk;
     private List<ACL> acl = new ArrayList<ACL>();
     private Properties properties;
-    
+
     public enum KEYS {
-    	zkConnectString("uncode.schedule.zkConnect"), 
-    	rootPath("uncode.schedule.rootPath"), 
-    	userName("uncode.schedule.zkUsername"), 
-    	password("uncode.schedule.zkPassword"), 
-    	zkSessionTimeout("uncode.schedule.zkSessionTimeout"), 
-    	autoRegisterTask("uncode.schedule.autoRegisterTask"), 
+    	zkConnectString("uncode.schedule.zkConnect"),
+    	rootPath("uncode.schedule.rootPath"),
+    	userName("uncode.schedule.zkUsername"),
+    	password("uncode.schedule.zkPassword"),
+    	zkSessionTimeout("uncode.schedule.zkSessionTimeout"),
+    	autoRegisterTask("uncode.schedule.autoRegisterTask"),
     	ipBlacklist("uncode.schedule.ipBlackLists");
     	public String key;
     	KEYS(String key){
     		this.key = key;
     	}
-        
+
     }
 
     public ZKManager(Properties aProperties) throws Exception{
         this.properties = aProperties;
         this.connect();
     }
-    
+
     /**
      * 重连zookeeper
      * @throws Exception
@@ -62,13 +62,13 @@ public class ZKManager{
             this.connect() ;
         }
     }
-    
+
     private void connect() throws Exception {
         CountDownLatch connectionLatch = new CountDownLatch(1);
         createZookeeper(connectionLatch);
         connectionLatch.await();
     }
-    
+
     private void createZookeeper(final CountDownLatch connectionLatch) throws Exception {
         zk = new ZooKeeper(this.properties.getProperty(KEYS.zkConnectString
                 .key), Integer.parseInt(this.properties
@@ -86,7 +86,7 @@ public class ZKManager{
                 DigestAuthenticationProvider.generateDigest(authString))));
         acl.add(new ACL(ZooDefs.Perms.READ, Ids.ANYONE_ID_UNSAFE));
     }
-    
+
     private void sessionEvent(CountDownLatch connectionLatch, WatchedEvent event) {
         if (event.getState() == KeeperState.SyncConnected) {
             log.info("收到ZK连接成功事件！");
@@ -100,12 +100,12 @@ public class ZKManager{
             }
         } // Disconnected：Zookeeper会自动处理Disconnected状态重连
     }
-    
+
     public void close() throws InterruptedException {
         log.info("关闭zookeeper连接");
         this.zk.close();
     }
-    
+
     String getRootPath(){
         return this.properties.getProperty(KEYS.rootPath.key);
     }
@@ -140,16 +140,16 @@ public class ZKManager{
         if(zk.exists(this.getRootPath(), false) == null){
             ZKTools.createPath(zk, this.getRootPath(), CreateMode.PERSISTENT, acl);
             //设置版本信息
-            zk.setData(this.getRootPath(),Version.getVersion().getBytes(),-1);
+            zk.setData(this.getRootPath(), com.info.schedule.core.Version.getVersion().getBytes(),-1);
         }else{
             //先校验父亲节点，本身是否已经是schedule的目录
             byte[] value = zk.getData(this.getRootPath(), false, null);
             if(value == null){
-                zk.setData(this.getRootPath(),Version.getVersion().getBytes(),-1);
+                zk.setData(this.getRootPath(), com.info.schedule.core.Version.getVersion().getBytes(),-1);
             }else{
                 String dataVersion = new String(value);
-                if(!Version.isCompatible(dataVersion)){
-                    throw new Exception("TBSchedule程序版本 "+ Version.getVersion() +" 不兼容Zookeeper中的数据版本 " + dataVersion );
+                if(!com.info.schedule.core.Version.isCompatible(dataVersion)){
+                    throw new Exception("TBSchedule程序版本 "+ com.info.schedule.core.Version.getVersion() +" 不兼容Zookeeper中的数据版本 " + dataVersion );
                 }
                 log.info("当前的程序版本:" + Version.getVersion() + " 数据版本: " + dataVersion);
             }
@@ -170,8 +170,8 @@ public class ZKManager{
                 }
             }
         }
-    }   
-    
+    }
+
     List<ACL> getAcl() {
         return acl;
     }
@@ -182,5 +182,5 @@ public class ZKManager{
         }
         return this.zk;
     }
-    
+
 }

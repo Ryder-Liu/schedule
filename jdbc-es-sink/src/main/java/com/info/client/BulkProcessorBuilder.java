@@ -1,4 +1,4 @@
-package com.asiainfo.client;
+package com.info.client;
 
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -12,7 +12,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.asiainfo.common.Constants.*;
+import static com.info.common.Constants.*;
 
 
 /**
